@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  imageUrl    String
+  price       Float?
+  rating      Float    @default(0)
+  reviewCount Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  reviews     Review[]
+}
+
+model Service {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  price       Float
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  reviews     Review[]
+}
+
+model Review {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  comment   String
+  rating    Int
+  productId String?  @db.ObjectId
+  serviceId String?  @db.ObjectId
+  createdAt DateTime @default(now())
+  product   Product? @relation(fields: [productId], references: [id])
+  service   Service? @relation(fields: [serviceId], references: [id])
+}
+
+model Admin {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  username  String   @unique
+  password  String 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HomePage {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  welcomeTitle      String
+  welcomeSubtitle   String
+  welcomeImageUrl   String
+  whyChooseTitle    String
+  whyChooseSubtitle String
+  whyChooseImageUrl String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model ContactInfo {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  address     String
+  phone       String
+  email       String
+  instagram   String?
+  whatsapp    String?
+  mapUrl      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+}
